@@ -17,7 +17,15 @@ pipeline {
                 script {
                     def workspaceDir = pwd()  // Obtener nuevamente el directorio de trabajo (si es necesario)
                     sh "ls -la ${workspaceDir}"  // Listar contenido del directorio de trabajo
-                    sh 'pytest'  // Ejecutar pruebas unitarias
+                    
+                    // Instalar pytest si no está instalado globalmente
+                    sh 'pip install pytest'
+                    
+                    // Verificar la ubicación de pytest (solo para propósitos de depuración)
+                    sh 'which pytest'
+                    
+                    // Ejecutar pruebas unitarias con pytest
+                    sh 'pytest'
                 }
             }
         }
