@@ -1,0 +1,47 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main  # Cambia esto según la rama que desees monitorear
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Especifica la versión de Python que necesitas
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Ajusta esto según tus requisitos
+
+      - name: Run unit tests
+        run: |
+          pytest  # O ajusta esto al comando necesario para ejecutar tus pruebas unitarias
+
+      - name: Analyze code quality with SonarQube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Necesitas configurar este secreto en la configuración del repositorio
+        run: |
+          sonar-scanner  # Ajusta esto según cómo tengas configurado SonarQube
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}  # Necesitas configurar estos secretos en la configuración del repositorio
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        env:
+          IMAGE_NAME: your-dockerhub-username/image-name  # Ajusta esto a tu nombre de usuario y nombre de imagen
+        run: |
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
