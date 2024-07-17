@@ -15,6 +15,7 @@ pipeline {
         stage('Ejecutar pruebas unitarias') {
             steps {
                 script {
+                    def workspaceDir = pwd()  // Obtener nuevamente el directorio de trabajo (si es necesario)
                     sh "ls -la ${workspaceDir}"  // Listar contenido del directorio de trabajo
                     sh 'pytest'  // Ejecutar pruebas unitarias
                 }
