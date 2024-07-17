@@ -11,10 +11,13 @@ pipeline {
         stage('Ejecutar pruebas unitarias') {
             steps {
                 script {
+                    // Instalar pip si no está instalado
+                    sh 'apt-get update && apt-get install -y python3-pip'
+
                     // Verificar la instalación de pip
                     sh 'pip --version'
                     
-                    // Instalar dependencias si es necesario
+                    // Instalar pytest y otras dependencias
                     sh 'pip install -r requirements.txt'  // Asegúrate de que esto sea necesario según tu proyecto
                     sh 'pip install pytest'  // Instala pytest si no está instalado
 
