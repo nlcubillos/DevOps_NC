@@ -10,30 +10,13 @@ pipeline {
 
         stage('Ejecutar pruebas unitarias') {
             steps {
-                // Aquí deberías incluir los comandos para ejecutar tus pruebas unitarias
-                // Por ejemplo, para Python con pytest:
-                sh 'pytest'
-            }
-        }
+                script {
+                    // Instalar dependencias si es necesario
+                    sh 'pip install -r requirements.txt'  // Asegúrate de que esto sea necesario según tu proyecto
+                    sh 'pip install pytest'  // Instala pytest si no está instalado
 
-        stage('Análisis de calidad del código') {
-            steps {
-                // Aquí deberías incluir los comandos para ejecutar SonarQube o SonarCloud
-                // Por ejemplo, analizando un proyecto de Python con SonarQube Scanner
-                withSonarQubeEnv('SonarQube_Server') {
-                    sh 'sonar-scanner'
-                }
-            }
-        }
-
-        stage('Construir imagen Docker y subir a Docker Hub') {
-            steps {
-                // Construir imagen Docker
-                sh 'docker build -t nombre_usuario/nombre_imagen .'
-                // Subir imagen a Docker Hub (requiere login previo)
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
-                    sh 'docker push nombre_usuario/nombre_imagen'
+                    // Ejecutar pruebas unitarias con pytest
+                    sh 'pytest'
                 }
             }
         }
