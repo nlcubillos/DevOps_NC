@@ -4,7 +4,20 @@ pipeline {
     stages {
         stage('Clonar repositorio') {
             steps {
-                git 'https://github.com/nlcubillos/DevOps_NC.git'
+                script {
+                    def workspaceDir = pwd()  // Obtener el directorio de trabajo del pipeline
+                    echo "Directorio de trabajo: ${workspaceDir}"
+                    git 'https://github.com/nlcubillos/DevOps_NC.git'
+                }
+            }
+        }
+
+        stage('Ejecutar pruebas unitarias') {
+            steps {
+                script {
+                    sh "ls -la ${workspaceDir}"  // Listar contenido del directorio de trabajo
+                    sh 'pytest'  // Ejecutar pruebas unitarias
+                }
             }
         }
     }
