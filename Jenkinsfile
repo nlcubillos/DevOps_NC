@@ -2,26 +2,40 @@ pipeline {
     agent any
 
     stages {
-        stage('Clonar Repositorio') {
+        stage('Clonar repositorio') {
             steps {
-                git 'git@github.com:nlcubillos/DevOps_NC.git'
+                git 'https://github.com/nlcubillos/DevOps_NC.git'
             }
         }
 
-        stage('Ejecutar Pruebas Unitarias') {
+        stage('Ejecutar pruebas unitarias') {
             steps {
-                sh 'pytest --junitxml=report.xml'
-                junit 'report.xml'
+                // Aquí deberías incluir los comandos para ejecutar tus pruebas unitarias
+                // Por ejemplo, para Python con pytest:
+                sh 'pytest'
             }
         }
 
-        // Otras etapas del pipeline se pueden agregar aquí
-    }
+        stage('Análisis de calidad del código') {
+            steps {
+                // Aquí deberías incluir los comandos para ejecutar SonarQube o SonarCloud
+                // Por ejemplo, analizando un proyecto de Python con SonarQube Scanner
+                withSonarQubeEnv('SonarQube_Server') {
+                    sh 'sonar-scanner'
+                }
+            }
+        }
 
-    // Opcionalmente, puedes agregar post-actions para manejar acciones después de las etapas
-    post {
-        always {
-            // Puedes agregar acciones que se ejecuten siempre, como limpiar recursos temporales
+        stage('Construir imagen Docker y subir a Docker Hub') {
+            steps {
+                // Construir imagen Docker
+                sh 'docker build -t nombre_usuario/nombre_imagen .'
+                // Subir imagen a Docker Hub (requiere login previo)
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'docker push nombre_usuario/nombre_imagen'
+                }
+            }
         }
     }
 }
